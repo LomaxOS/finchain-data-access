@@ -1,0 +1,70 @@
+plugins {
+    id 'checkstyle'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'java'
+}
+group = 'finchain-storage'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url "https://hyperledger.jfrog.io/hyperledger/fabric-maven"
+    }
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
+dependencies {
+    implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:2.5.+'
+    implementation 'org.json:json:+'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
+    testImplementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:2.5.+'
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.10.0'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
+}
+
+shadowJar {
+    archiveBaseName = 'chaincode'
+    archiveVersion = ''
+    archiveClassifier = ''
+    mergeServiceFiles()
+
+    manifest {
+        attributes 'Main-Class': 'org.hyperledger.fabric.contract.ContractRouter'
+    }
+}
+
+checkstyle {
+    toolVersion = '10.3.3'
+    configFile = file("config/checkstyle/checkstyle.xml")
+    ignoreFailures = false
+
+    configProperties = [
+            'suppressionFile': file("config/checkstyle/suppressions.xml").absolutePath
+    ]
+}
+checkstyleMain {
+    source ='src/main/java/org.insurtech'
+}
+
+checkstyleTest {
+    source ='src/test/java/org.insurtech'
+}
+
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation" << "-parameters"
+    options.release.set(11)
+}
