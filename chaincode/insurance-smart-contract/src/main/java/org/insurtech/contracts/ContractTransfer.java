@@ -25,8 +25,7 @@ import org.insurtech.model.Employees;
 public final class ContractTransfer implements ContractInterface {
 
     public ContractTransfer(){}
-    //Registration
-    //A data transfer object of employee must be created to avoid returning the password and discovery phrase//
+    
     @Transaction(intent = Transaction.TYPE.SUBMIT)
     public String createEmployeeAccount(final Context ctx, final String employeeID, final String name, final String password, final String phrase) {
 
@@ -45,11 +44,6 @@ public final class ContractTransfer implements ContractInterface {
 
         ChaincodeStub stub = ctx.getStub();
         boolean isAllowed = false;
-        // String requestDetails = fileMetadata+":"+employeeId;
-
-        //Verify if employee exists
-
-        //verify ID
         stub.putState(employeeId, "employeeDetailAsByte".getBytes());
 
         stub.setEvent("Employee account created", "employeeDetailAsByte".getBytes());
@@ -57,15 +51,6 @@ public final class ContractTransfer implements ContractInterface {
         return isAllowed;
     }
 
-    //login
-   /* @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public boolean login(final Context ctx, final String employeeID, final String password) {
-
-        unauthorisedIfNoPermits(ctx);
-
-        checkEmployeePasswordValidity(ctx, employeeID, password);
-
-        return true;
-    }*/
+  
 
 }
