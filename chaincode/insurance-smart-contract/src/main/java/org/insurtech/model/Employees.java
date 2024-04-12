@@ -1,4 +1,4 @@
-package org.insurtech;
+package org.insurtech.model;
 
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
@@ -23,7 +23,7 @@ public class Employees {
     private final String password;
 
     @Property
-    private final String phrase;
+    private final String recoveryPhrase;
 
 
 
@@ -31,7 +31,7 @@ public class Employees {
         this.employeeId = _employeeId;
         this.name = _name;
         this.password = _password;
-        this.phrase = _phrase;
+        this.recoveryPhrase = _phrase;
     }
 
     public String getEmployeeId() {
@@ -47,17 +47,17 @@ public class Employees {
         return password;
     }
 
-    public String getPhrase() {
-        return phrase;
+    public String getRecoveryPhrase() {
+        return recoveryPhrase;
     }
 
 
     public byte[] serialize() {
         Map<String, Object> eMap = new HashMap<>();
-        eMap.put("Employee ID", getEmployeeId());
-        eMap.put("Name",  getName());
-        eMap.put("Password", getPassword());
-        eMap.put("HashPhrase",  getPhrase());
+        eMap.put("employeeId", getEmployeeId());
+        eMap.put("name",  getName());
+        eMap.put("password", getPassword());
+        eMap.put("recoveryPhrase",  getRecoveryPhrase());
 
         String jsonString = new JSONObject(eMap).toString();
 
@@ -71,41 +71,34 @@ public class Employees {
 
         JSONObject json = new JSONObject(employeeJSON);
         Map<String, Object> eMap = json.toMap();
-        final String id = (String) eMap.get("Employee ID");
-        final String name = (String) eMap.get("Name");
-        final String password = (String) eMap.get("Password");
-        final String phrase = (String) eMap.get("HashPhrase");
+        final String id = (String) eMap.get("employeeId");
+        final String name = (String) eMap.get("name");
+        final String password = (String) eMap.get("password");
+        final String phrase = (String) eMap.get("recoveryPhrase");
 
         return new Employees(id, name, password, phrase);
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-
-        if ((obj == null) || (getClass() != obj.getClass())) {
-            return false;
-        }
-
-        Employees other = (Employees) obj;
-
-        return Objects.deepEquals(
-                new String[]{getEmployeeId(), getName(),getPassword(), getPhrase()},
-                new String[]{other.getEmployeeId(), other.getName(), other.getPassword(), other.getPhrase()});
-
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Employees)) return false;
+        Employees employees = (Employees) o;
+        return Objects.equals(employeeId, employees.employeeId) && Objects.equals(name, employees.name) && Objects.equals(password, employees.password) && Objects.equals(recoveryPhrase, employees.recoveryPhrase);
     }
 
     @Override
-    public int hashCode(){
-        return Objects.hash(getEmployeeId(), getName(), getPassword(), getPhrase());
+    public int hashCode() {
+        return Objects.hash(employeeId, name, password, recoveryPhrase);
     }
 
     @Override
-    public String toString(){
-        return this.getClass().getSimpleName() + "@" + Integer.toHexString(hashCode())
-                + "[EmployeeID = " +getEmployeeId()+ ", name = "+getName() + ", password = "+getPassword()+", hash phrase = "+ getPhrase()+"]";
+    public String toString() {
+        return "Employees{" +
+                "employeeId='" + employeeId + '\'' +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", phrase='" + recoveryPhrase + '\'' +
+                '}';
     }
-
 }
