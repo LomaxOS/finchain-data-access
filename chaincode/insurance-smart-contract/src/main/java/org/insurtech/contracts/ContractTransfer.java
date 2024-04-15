@@ -8,6 +8,7 @@ import org.hyperledger.fabric.contract.annotation.Info;
 import org.hyperledger.fabric.contract.annotation.License;
 import org.hyperledger.fabric.contract.annotation.Transaction;
 import org.hyperledger.fabric.shim.ChaincodeStub;
+import org.insurtech.model.Documents;
 import org.insurtech.model.Employees;
 
 
@@ -25,8 +26,7 @@ import org.insurtech.model.Employees;
 public final class ContractTransfer implements ContractInterface {
 
     public ContractTransfer(){}
-    //Registration
-    //A data transfer object of employee must be created to avoid returning the password and discovery phrase//
+    //Register employee and return transaction id when successful
     @Transaction(intent = Transaction.TYPE.SUBMIT)
     public String createEmployeeAccount(final Context ctx, final String employeeID, final String name, final String password, final String phrase) {
 
@@ -40,32 +40,20 @@ public final class ContractTransfer implements ContractInterface {
 
         return ctx.getStub().getTxId();
     }
+
+    //Upload Documents and return its transaction id when successful
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public boolean uploadDocument(Context ctx, String employeeId, String documentName, String documentHash){
+    public String uploadDocument(Context ctx, String employeeId, String documentName, String documentHash){
 
-        ChaincodeStub stub = ctx.getStub();
-        boolean isAllowed = false;
-        // String requestDetails = fileMetadata+":"+employeeId;
+        Documents document = new Documents(employeeId, documentName, documentHash);
 
-        //Verify if employee exists
+        byte[] documentAsByte = document.serialize();
 
-        //verify ID
-        stub.putState(employeeId, "employeeDetailAsByte".getBytes());
+        ctx.getStub().putState(employeeId, documentAsByte);
 
-        stub.setEvent("Employee account created", "employeeDetailAsByte".getBytes());
+        ctx.getStub().setEvent("Document stored", documentAsByte);
 
-        return isAllowed;
+        return ctx.getStub().getTxId();
     }
-
-    //login
-   /* @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public boolean login(final Context ctx, final String employeeID, final String password) {
-
-        unauthorisedIfNoPermits(ctx);
-
-        checkEmployeePasswordValidity(ctx, employeeID, password);
-
-        return true;
-    }*/
 
 }
