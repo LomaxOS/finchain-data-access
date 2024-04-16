@@ -26,6 +26,8 @@ import org.insurtech.model.Employees;
 public final class ContractTransfer implements ContractInterface {
 
     public ContractTransfer(){}
+
+
     //Register employee and return transaction id when successful
     @Transaction(intent = Transaction.TYPE.SUBMIT)
     public String createEmployeeAccount(final Context ctx, final String employeeID, final String name, final String password, final String phrase) {
@@ -43,17 +45,33 @@ public final class ContractTransfer implements ContractInterface {
 
     //Upload Documents and return its transaction id when successful
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public String uploadDocument(Context ctx, String employeeId, String documentName, String documentHash){
+    public String uploadDocument(Context ctx, String documentId, String employeeId, String documentName){
 
-        Documents document = new Documents(employeeId, documentName, documentHash);
+        Documents document = new Documents(documentId, employeeId, documentName);
 
         byte[] documentAsByte = document.serialize();
 
-        ctx.getStub().putState(employeeId, documentAsByte);
+        ctx.getStub().putState(documentId, documentAsByte);
 
         ctx.getStub().setEvent("Document stored", documentAsByte);
 
         return ctx.getStub().getTxId();
+    }
+
+    //return true if the current employee id and document name match the stored document details
+    @Transaction(intent = Transaction.TYPE.EVALUATE)
+    public boolean downloadDocument(Context ctx, String documentId, String employeeId, String documentName){
+        byte[] documentAsByte = ctx.getStub().getState(documentId);
+
+        if (documentAsByte == null || documentAsByte.length == 0) {
+            return false;
+        }
+        Documents document = Documents.deserialize(documentAsByte);
+
+        if (!document.getEmployeeId().equals(employeeId) || !document.getDocumentName().equals(documentName)) {
+            return false;
+        }
+        return true;
     }
 
 }

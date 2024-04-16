@@ -3,11 +3,10 @@ package org.insurtech.model;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 import org.json.JSONObject;
-
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 
@@ -53,7 +52,7 @@ public class Employees {
 
 
     public byte[] serialize() {
-        Map<String, Object> eMap = new HashMap<>();
+        Map<String, Object> eMap = new LinkedHashMap<>();
         eMap.put("employeeId", getEmployeeId());
         eMap.put("name",  getName());
         eMap.put("password", getPassword());
