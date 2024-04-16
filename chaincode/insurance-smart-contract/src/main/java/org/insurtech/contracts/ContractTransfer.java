@@ -8,7 +8,6 @@ import org.hyperledger.fabric.contract.annotation.Info;
 import org.hyperledger.fabric.contract.annotation.License;
 import org.hyperledger.fabric.contract.annotation.Transaction;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.insurtech.model.Documents;
 import org.insurtech.model.Employees;
 
 
@@ -26,9 +25,8 @@ import org.insurtech.model.Employees;
 public final class ContractTransfer implements ContractInterface {
 
     public ContractTransfer(){}
-
-
-    //Register employee and return transaction id when successful
+    //Registration
+    //A data transfer object of employee must be created to avoid returning the password and discovery phrase//
     @Transaction(intent = Transaction.TYPE.SUBMIT)
     public String createEmployeeAccount(final Context ctx, final String employeeID, final String name, final String password, final String phrase) {
 
@@ -42,36 +40,32 @@ public final class ContractTransfer implements ContractInterface {
 
         return ctx.getStub().getTxId();
     }
-
-    //Upload Documents and return its transaction id when successful
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public String uploadDocument(Context ctx, String documentId, String employeeId, String documentName){
+    public boolean uploadDocument(Context ctx, String employeeId, String documentName, String documentHash){
 
-        Documents document = new Documents(documentId, employeeId, documentName);
+        ChaincodeStub stub = ctx.getStub();
+        boolean isAllowed = false;
+        // String requestDetails = fileMetadata+":"+employeeId;
 
-        byte[] documentAsByte = document.serialize();
+        //Verify if employee exists
 
-        ctx.getStub().putState(documentId, documentAsByte);
+        //verify ID
+        stub.putState(employeeId, "employeeDetailAsByte".getBytes());
 
-        ctx.getStub().setEvent("Document stored", documentAsByte);
+        stub.setEvent("Employee account created", "employeeDetailAsByte".getBytes());
 
-        return ctx.getStub().getTxId();
+        return isAllowed;
     }
 
-    //return true if the current employee id and document name match the stored document details
-    @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public boolean downloadDocument(Context ctx, String documentId, String employeeId, String documentName){
-        byte[] documentAsByte = ctx.getStub().getState(documentId);
+    //login
+   /* @Transaction(intent = Transaction.TYPE.EVALUATE)
+    public boolean login(final Context ctx, final String employeeID, final String password) {
 
-        if (documentAsByte == null || documentAsByte.length == 0) {
-            return false;
-        }
-        Documents document = Documents.deserialize(documentAsByte);
+        unauthorisedIfNoPermits(ctx);
 
-        if (!document.getEmployeeId().equals(employeeId) || !document.getDocumentName().equals(documentName)) {
-            return false;
-        }
+        checkEmployeePasswordValidity(ctx, employeeID, password);
+
         return true;
-    }
+    }*/
 
 }

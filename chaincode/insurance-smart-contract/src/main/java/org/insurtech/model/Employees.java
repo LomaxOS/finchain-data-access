@@ -24,8 +24,6 @@ public class Employees {
     @Property
     private final String recoveryPhrase;
 
-
-
     public Employees(String _employeeId, String _name, String _password, String _phrase) {
         this.employeeId = _employeeId;
         this.name = _name;
@@ -41,7 +39,6 @@ public class Employees {
         return name;
     }
 
-
     public String getPassword() {
         return password;
     }
@@ -49,7 +46,6 @@ public class Employees {
     public String getRecoveryPhrase() {
         return recoveryPhrase;
     }
-
 
     public byte[] serialize() {
         Map<String, Object> eMap = new LinkedHashMap<>();
