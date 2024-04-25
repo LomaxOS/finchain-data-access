@@ -23,11 +23,15 @@ public class Documents {
 
 
     public Documents(String documentId, String employeeId, String documentName) {
+
+        this.documentId = documentId;
         this.employeeId = employeeId;
         this.documentName = documentName;
-        this.documentId = documentId;
     }
 
+    public String getDocumentId() {
+        return documentId;
+    }
     public String getEmployeeId() {
         return employeeId;
     }
@@ -36,9 +40,6 @@ public class Documents {
         return documentName;
     }
 
-    public String getDocumentId() {
-        return documentId;
-    }
 
     public byte[] serialize() {
         Map<String, Object> dMap = new LinkedHashMap<>();
@@ -52,9 +53,6 @@ public class Documents {
         return jsonString.getBytes(UTF_8);
     }
 
-    public static Documents deserialize(final byte[] documentJSON) {
-        return deserialize(new String(documentJSON, UTF_8));
-    }
      public static Documents deserialize(final String documentJSON) {
          JSONObject json = new JSONObject(documentJSON);
          Map<String, Object> eMap = json.toMap();
@@ -62,6 +60,7 @@ public class Documents {
          final String id = (String) eMap.get("documentId");
          final String employeeId = (String) eMap.get("employeeId");
          final String name = (String) eMap.get("documentName");
+
          return new Documents(id, employeeId, name);
      }
 }

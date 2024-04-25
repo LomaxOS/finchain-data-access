@@ -4,7 +4,7 @@ import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.shim.ChaincodeException;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.insurtech.contracts.ContractUtility;
+import org.insurtech.contracts.ContractTransfer;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,41 +17,44 @@ class ContractTests {
 
     @Test
     void employeeExistsTest() {
-
+        ContractTransfer contractUtility = new ContractTransfer();
         Context ctx = mock(Context.class);
         ChaincodeStub stub = mock(ChaincodeStub.class);
 
         when(ctx.getStub()).thenReturn(stub);
         when(stub.getStringState("fs-empl001")).thenReturn(("{\"employeeId\":\"fs-empl001\",\"name\":\"Beamery\",\"password\":\"fs-empl001?=+0\",\"recoveryPhrase\":\"68d1209e09b0e208b839dfbea406768fa938349a\"}"));
 
-        assertTrue(ContractUtility.isEmployeeExist(ctx, "fs-empl001"));
+        assertTrue(contractUtility.isEmployeeExist(ctx, "fs-empl001"));
     }
 
     @Test
     void employeeDoesNotExistTest() {
+        ContractTransfer contractUtility = new ContractTransfer();
         Context ctx = mock(Context.class);
         ChaincodeStub stub = mock(ChaincodeStub.class);
 
         when(ctx.getStub()).thenReturn(stub);
         when(stub.getStringState("fs-empl001")).thenReturn("");
 
-        assertFalse(ContractUtility.isEmployeeExist(ctx, "fs-empl001"));
+        assertFalse(contractUtility.isEmployeeExist(ctx, "fs-empl001"));
 
     }
     @Test
     void employeeIsAuthorisedTest() {
+        ContractTransfer contractUtility = new ContractTransfer();
         Context ctx = mock(Context.class);
         ClientIdentity clientIdentity = mock(ClientIdentity.class);
 
         when(ctx.getClientIdentity()).thenReturn(clientIdentity);
         when(clientIdentity.assertAttributeValue("active_employee", "true")).thenReturn(true);
 
-        assertTrue(ContractUtility.isIdentityPermit(ctx));
+        assertTrue(contractUtility.isIdentityPermit(ctx));
 
     }
 
     @Test
     void employeeIsNotAuthorisedTest() {
+        ContractTransfer contractUtility = new ContractTransfer();
         Context ctx = mock(Context.class);
         ClientIdentity clientIdentity = mock(ClientIdentity.class);
 
@@ -59,32 +62,34 @@ class ContractTests {
 
         when(clientIdentity.assertAttributeValue("active_employee", "true")).thenReturn(false);
 
-        assertFalse(ContractUtility.isIdentityPermit(ctx));
+        assertFalse(contractUtility.isIdentityPermit(ctx));
     }
     @Test
     void employeeCorrectPasswordTest() {
+        ContractTransfer contractUtility = new ContractTransfer();
         Context ctx = mock(Context.class);
         ChaincodeStub stub = mock(ChaincodeStub.class);
 
         when(ctx.getStub()).thenReturn(stub);
-        when(stub.getState("fs-empl001")).thenReturn(("{\"employeeId\":\"fs-empl001\",\"name\":\"Beamery\",\"password\":\"fs-empl001?=+0\",\"recoveryPhrase\":\"68d1209e09b0e208b839dfbea406768fa938349a\"}").getBytes());
+        when(stub.getStringState("fs-empl001")).thenReturn(("{\"employeeId\":\"fs-empl001\",\"name\":\"Beamery\",\"password\":\"fs-empl001?=+0\",\"recoveryPhrase\":\"68d1209e09b0e208b839dfbea406768fa938349a\"}"));
 
 
         assertDoesNotThrow(() -> {
-            ContractUtility.checkIfPasswordIsValid(ctx, "fs-empl001", "fs-empl001?=+0");
+            contractUtility.checkIfPasswordIsValid(ctx, "fs-empl001", "fs-empl001?=+0");
         });
     }
 
     @Test
     void employeeIncorrectPasswordTest() {
+        ContractTransfer contractUtility = new ContractTransfer();
         Context ctx = mock(Context.class);
         ChaincodeStub stub = mock(ChaincodeStub.class);
 
         when(ctx.getStub()).thenReturn(stub);
-        when(stub.getState("fs-empl001")).thenReturn(("{\"employeeId\":\"fs-empl001\",\"name\":\"Beamery\",\"password\":\"fs-empl001?=+0\",\"recoveryPhrase\":\"68d1209e09b0e208b839dfbea406768fa938349a\"}").getBytes());
+        when(stub.getStringState("fs-empl001")).thenReturn(("{\"employeeId\":\"fs-empl001\",\"name\":\"Beamery\",\"password\":\"fs-empl001?=+0\",\"recoveryPhrase\":\"68d1209e09b0e208b839dfbea406768fa938349a\"}"));
 
         assertThrows(ChaincodeException.class, () -> {
-            ContractUtility.checkIfPasswordIsValid(ctx, "fs-empl001", "wrongpassword");
+            contractUtility.checkIfPasswordIsValid(ctx, "fs-empl001", "wrongpassword");
         });
     }
 

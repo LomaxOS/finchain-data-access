@@ -58,9 +58,6 @@ public class Employees {
 
         return jsonString.getBytes(UTF_8);
     }
-    public static Employees deserialize(final byte[] employeeJSON) {
-        return deserialize(new String(employeeJSON, UTF_8));
-    }
 
     public static Employees deserialize(final String employeeJSON) {
 

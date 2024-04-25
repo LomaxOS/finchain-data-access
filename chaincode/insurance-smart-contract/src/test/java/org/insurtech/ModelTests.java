@@ -37,7 +37,7 @@ class ModelTests {
         expectedJson.put("password", "fs-empl001Loe4@");
         expectedJson.put("recoveryPhrase", "This is a sample phrase for hashing.");
 
-        byte[] expectedBytes = expectedJson.toString().getBytes(StandardCharsets.UTF_8);
+        String expectedBytes = expectedJson.toString();
 
         Employees actualEmployee = Employees.deserialize(expectedBytes);
 
@@ -56,6 +56,7 @@ class ModelTests {
         expectedJson.put("documentName", "fypIsAwesome.pdf");
 
         byte[] actualBytes = doc.serialize();
+
         String actualJsonString = new String(actualBytes, StandardCharsets.UTF_8);
         JSONObject actualJson = new JSONObject(actualJsonString);
 
@@ -68,7 +69,7 @@ class ModelTests {
         expectedJson.put("employeeId", "fs-empl001");
         expectedJson.put("documentName", "fypIsAwesome.pdf");
 
-        byte[] expectedBytes = expectedJson.toString().getBytes(StandardCharsets.UTF_8);
+        String expectedBytes = expectedJson.toString();
 
         Documents actualDoc = Documents.deserialize(expectedBytes);
 
